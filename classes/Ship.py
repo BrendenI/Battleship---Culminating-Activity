@@ -4,7 +4,6 @@ class Ship:
     """
     def __init__(self, length: int, colour: str, name: str):
         self.length = length
-        self.health = length
         self.colour = colour
         self.name = name
-        self.shipHit = False
+        self.sunk = False

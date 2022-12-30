@@ -7,6 +7,7 @@ class Coordinate:
         self.colour = None
         self.name = None
         self.ship = False
+        self.shipHit = False
         self.letterEquivalents = dict(
             A = 0,
             B = 1,

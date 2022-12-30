@@ -11,7 +11,6 @@ from functions import utils
 class Board:
     def __init__(self, rows: list[list[Coordinate]]):
         self.rows = rows
-        self.columnLabel = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[: len(rows[0])]
         self.shipLocations = {}
         self.tempBoard = None
 
@@ -29,45 +28,6 @@ class Board:
             raise ValueError("board.getCellData was provided an input that satisfies: x > 9 or x < 0 or y > 9 or y < 0")
 
         return self.rows[y][x]
-
-    def displayBoard(self, player: Player, opponent: Player, hidden: bool, temp) -> list[list[str]]:
-        """
-        This function displays the board in it's current state. The board can also be hidden meaning the other player won't see the ship locations when displaying.
-        """
-        formattedRows: list[list[str]] = [f"​​​{self.columnLabel}", ""]
-
-        if hidden:
-            for num, row in enumerate(opponent.board.tempBoard if temp else opponent.board.rows, start=1):   
-                formattedRow: list[str] = []
-                
-                for coordinate in row:
-                    if coordinate.ship and coordinate.ship.shipHit:
-                        formattedRow.append(colored("⛝", 'red'))
-                    elif player.isGuessed(coordinate.rawCoords()):
-                        formattedRow.append("■")
-                    else:
-                        formattedRow.append("□")
-                    
-                formattedRow.insert(0, f"{num}  " if num < 10 else f"{num} ")
-    
-                formattedRows.append(formattedRow)
-        else:
-            for num, row in enumerate(self.tempBoard if temp else self.rows, start=1):
-                formattedRow: list[str] = []
-                
-                for coordinate in row:
-                    if coordinate.ship and coordinate.ship.shipHit:
-                        formattedRow.append(colored("⛝", 'red'))
-                    elif coordinate.ship:
-                        formattedRow.append(colored("■", coordinate.colour))
-                    else:
-                        formattedRow.append("□")
-
-                formattedRow.insert(0, f"{num}  " if num < 10 else f"{num} ")
-    
-                formattedRows.append(formattedRow)
-
-        return formattedRows
             
 
     def tempAddShip(self, startCoordinates: list[int], endCoordinates: list[int], shipData) -> list[list[Coordinate]]:
