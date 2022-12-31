@@ -690,7 +690,6 @@ def game() -> GameDetails:
         player.totalShots += 1
         
         guessCell: Coordinate = opponent.board.getCellData(guess[0], guess[1])
-        guessCellI: Coordinate = player.board.getCellData(guess[0], guess[1])
 
         if guessCell.ship:
             cprint(f"{humanizedPlayer['determiner']} Shot Hit {humanizedOpponent['determiner']} {guessCell.ship.name} On Cell: {''.join(map(str, guessCell.coords()))}!", "magenta", attrs=['bold', 'underline'])
