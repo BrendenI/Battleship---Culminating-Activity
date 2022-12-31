@@ -25,6 +25,7 @@ class Player:
         if self.pvp:
             figure: dict = dict(
                 singular="Player 1" if self.player == 1 else "Player 2",
+                singular2="Player 1" if self.player == 1 else "Player 2",
                 determiner="Player 1's" if self.player == 1 else "Player 2's",
                 determiner2="Player 1's" if self.player == 1 else "Player 2's",
             )

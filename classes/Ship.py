@@ -6,4 +6,7 @@ class Ship:
         self.length = length
         self.colour = colour
         self.name = name
-        self.sunk = False
+        self.health = length
+
+    def isSunk(self) -> bool:
+        return not bool(self.health)

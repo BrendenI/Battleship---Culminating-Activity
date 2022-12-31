@@ -1,4 +1,5 @@
 from classes.Ship import Ship
+from classes.SunkShip import SunkShip
 
 class Coordinate:
     def __init__(self, column, row):
