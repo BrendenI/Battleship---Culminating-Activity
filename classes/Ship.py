@@ -1,6 +1,6 @@
 class Ship:
     """
-    This class is used to store ship lengths & colours. It is not used for much...
+    This class is used to store ship data.
     """
     def __init__(self, length: int, colour: str, name: str):
         self.length = length
@@ -9,4 +9,4 @@ class Ship:
         self.health = length
 
     def isSunk(self) -> bool:
-        return not bool(self.health)
+        return self.health < 1

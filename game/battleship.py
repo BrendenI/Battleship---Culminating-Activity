@@ -3,6 +3,7 @@ import time
 import os
 import random
 from termcolor import cprint, colored
+from copy import deepcopy
 
 # Import the local classes module.
 from classes.Board import Board
@@ -19,14 +20,16 @@ ALPHAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[:10]
 
 # Create a dictionary of Ship objects with their traditional lengths.
 SHIPS = dict(
-    carrier = Ship(2, "blue", "Carrier"),
+    # carrier = Ship(5, "blue", "Carrier"),
     # battleship = Ship(4, "cyan", "Battleship"),
     # cruiser = Ship(3, "yellow", "Cruiser"),
-    # submarine = Ship(3, "magenta", "Submarine"),
+    submarine = Ship(3, "magenta", "Submarine"),
     destroyer = Ship(2, "green", "Destroyer"),
 )
 
 SLEEP = 1
+
+DEBUG = True
 
 # Clear screen function.
 def cls() -> None:
@@ -35,7 +38,7 @@ def cls() -> None:
 
 # Define a function to print the game board.
 
-def getFormattedRows(player: Player, opponent: Player, facingOpponent: bool, temp) -> list[list[str]]:
+def getFormattedRows(player: Player, opponent: Player, facingOpponent: bool, temp: bool, isOutcomeScreen: bool) -> list[list[str]]:
     """
     This function displays the board in it's current state. The board can also be hidden meaning the other player won't see the ship locations when displaying.
     """
@@ -47,7 +50,10 @@ def getFormattedRows(player: Player, opponent: Player, facingOpponent: bool, tem
         if temp:
             iterable = opponent.board.tempBoard
         else:
-            iterable = opponent.board.rows
+            if isOutcomeScreen:
+                iterable = player.board.rows
+            else:
+                iterable = opponent.board.rows
     else:
         if temp:
             iterable = player.board.tempBoard
@@ -73,9 +79,9 @@ def getFormattedRows(player: Player, opponent: Player, facingOpponent: bool, tem
 
     return formattedRows
 
-def printBoard(player: Player, opponent: Player, hidden: bool, temp = False):
+def printBoard(player: Player, opponent: Player, hidden: bool, temp = False, isOutcomeScreen = False):
     # Iterate through the rows of the board.
-    for row in getFormattedRows(player, opponent, hidden, temp):
+    for row in getFormattedRows(player, opponent, hidden, temp, isOutcomeScreen):
         # Print each element in the row.
         print(*row, flush = True)
 
@@ -394,7 +400,7 @@ def placeShip(player: Player, opponent: Player, data: Ship) -> None:
                 continue
 
             # If there are no collisions, set the ship to the specified location.
-            player.board.setShip(currentStartCoord, currentEndCoord, data)
+            player.board.setShip(currentStartCoord, currentEndCoord, deepcopy(data))
 
             return
 
@@ -540,8 +546,8 @@ def displayStats(player: Player, opponent: Player) -> None:
     print(colored(f"{addresses['determiner']} Total Shots:", "cyan", attrs=['bold']), player.totalShots)
     print(colored(f"{addresses['determiner']} Hits:", "red", attrs=['bold']), player.hits)
     print(colored(f"{addresses['determiner']} Misses:", "yellow", attrs=['bold']), player.misses, "\n")
-    print(colored(f"Ships {addresses['singular2']} Sunk:", "yellow", attrs=['bold']), len(opponent.board.sunkShips))
-    print(colored(f"{addresses['determiner']} Ships That Have Been Sunk:", "yellow", attrs=['bold']), len(player.board.sunkShips), "\n\n")
+    print(colored(f"Ships {addresses['singular2']} Sunk:", "magenta", attrs=['bold']), len(opponent.board.sunkShips))
+    print(colored(f"{addresses['determiner']} Ships That Have Been Sunk:", "magenta", attrs=['bold']), len(player.board.sunkShips), "\n\n")
 
 
 def getHumanMove(player: Player, opponent: Player) -> list[int]:
@@ -557,7 +563,11 @@ def getHumanMove(player: Player, opponent: Player) -> list[int]:
 
         cprint(f"{humanizedOpponent['determiner']} Board:\n", "blue", attrs=['bold'])
         
-        printBoard(opponent, player, False)
+        printBoard(opponent, player, False if ((not player.pvp) and (opponent.getRaw() == 1)) or DEBUG else True, isOutcomeScreen = True)
+
+        cprint(f"\n\n{humanizedPlayer['determiner']} Board:\n", "blue", attrs=['bold'])
+        
+        printBoard(player, opponent, False if ((not player.pvp) and (opponent.getRaw() == 1)) or DEBUG else True, isOutcomeScreen = True if player.pvp else False)
 
         choice: str = input("\n\n> ").upper().split()
 
@@ -603,15 +613,14 @@ def getComputerMove(player: Player, opponent: Player) -> list[int]:
         if not randomCoordinate or player.isGuessed(randomCoordinate.rawCoords()):
             continue
             
-        player.addGuessedCell(randomCoordinate.rawCoords()
-        )
+        player.addGuessedCell(randomCoordinate.rawCoords())
 
         return randomCoordinate.rawCoords()
         
 
 def game() -> GameDetails:
     # Get the prefered game style. (PVP vs PVE)
-    isPVP: bool = False  # versusPlayer()
+    isPVP: bool = True# versusPlayer()
 
     # Create a new array for the players.
     players: list[Player] = [Player(1, isPVP), Player(2, isPVP)]
@@ -621,10 +630,8 @@ def game() -> GameDetails:
         player.board: Board = Board(generateNewBoard())
 
     # Since player 1 is always human, place their ships.
-    # humanShipPlacement(players[0], players[1])
-    
-    players[0].board.setShip([0, 2], [1, 2], Ship(2, "green", "Test Ship"))
-    
+    humanShipPlacement(players[0], players[1])
+        
     # Clear the screen.
     cls()
 
@@ -640,7 +647,7 @@ def game() -> GameDetails:
     cls()
 
     # Get a random starting player.
-    player = players[0] #random.choice(players)
+    player = random.choice(players)
 
     # Print who is starting.
     printStartingPlayer(player)
@@ -664,7 +671,7 @@ def game() -> GameDetails:
         else:
             if player.getRaw() == 1:
                 guess = getHumanMove(player, opponent)
-                
+
                 cls()
             else:
                 cls()
@@ -683,11 +690,11 @@ def game() -> GameDetails:
         player.totalShots += 1
         
         guessCell: Coordinate = opponent.board.getCellData(guess[0], guess[1])
-        invertedGuessCell: Coordinate = player.board.getCellData(guess[0], guess[1])
+        guessCellI: Coordinate = player.board.getCellData(guess[0], guess[1])
 
         if guessCell.ship:
             cprint(f"{humanizedPlayer['determiner']} Shot Hit {humanizedOpponent['determiner']} {guessCell.ship.name} On Cell: {''.join(map(str, guessCell.coords()))}!", "magenta", attrs=['bold', 'underline'])
-            invertedGuessCell.shipHit = True
+            guessCell.shipHit = True
             guessCell.ship.health -= 1
             player.hits += 1
         else:
@@ -696,13 +703,13 @@ def game() -> GameDetails:
         
         cprint(f"\n\n{humanized1['determiner']} Board:\n", "blue", attrs=['bold'])
 
-        printBoard(players[0], players[1], True)
+        printBoard(players[0], players[1], True if (isPVP and not DEBUG) else False, isOutcomeScreen = True if isPVP else False)
         
         print("\n")
 
         cprint(f"{humanized2['determiner']} Board:\n", "blue", attrs=['bold'])
-        
-        printBoard(players[1], players[0], True)
+
+        printBoard(players[1], players[0], not DEBUG, isOutcomeScreen = True)
 
         if guessCell.ship and guessCell.ship.isSunk():
             cprint(f"\n\n{humanizedPlayer['singular2']} Sunk {humanizedOpponent['determiner']} {guessCell.ship.name}!", "red", attrs=['bold', 'underline'])

@@ -31,13 +31,28 @@ from termcolor import cprint, colored
 from game import battleship
 from assets import introGraphics
 
-RULES: str = f"""{colored("Game Objective", "blue", attrs=["bold"])}
+RULES: str = f"""{colored("In-Game Symbols", "blue", attrs=["bold"])}
 
-The object of Battleship is to try and sink all of the other player"s before they sink all of your ships. All of the other player"s ships are somewhere on his/her board.
+In Battleship, various symbols are used to denote grid cell meanings. In this version of Battleship, you will see the following symbols:
+
+
+Non-Ship cells are shown with an outlined square: □
+
+Ship cells are shown with a filled & coloured square: {colored("■", "blue")} {colored("■", "cyan")} {colored("■", "yellow")} {colored("■", "magenta")} {colored("■", "green")}
+
+Missed shots are shown with a filled white square: ■
+
+Hit cells are shown with a crossed out, red square: {colored("⛝", "red")}
+
+----------
+
+{colored("Game Objective", "blue", attrs=["bold"])}
+
+The object of Battleship is to try and sink all of the other player's before they sink all of your ships. All of the other player's ships are somewhere on his/her board.
 
 You try and hit them by calling out the coordinates of one of the squares on the board. The other player also tries to hit your ships by calling out coordinates.
 
-Neither you nor the other player can see the other"s board so you must try to guess where they are. Each board in the physical game has two grids: the lower (horizontal) section for the player"s ships and the upper part (vertical during play) for recording the player"s guesses.
+Neither you nor the other player can see the other's board so you must try to guess where they are. Each board in the physical game has two grids: the lower (horizontal) section for the player's ships and the upper part (vertical during play) for recording the player's guesses.
 
 ----------
 
@@ -53,11 +68,11 @@ The 5 ships are: Carrier (occupies 5 spaces), Battleship (4), Cruiser (3), Subma
 
 {colored("Playing The Game", "blue", attrs=["bold"])}
 
-Player"s take turns guessing by calling out the coordinates. The computer will tell you if you hit or missed. Both players" boards will be marked based on: red for hit, white for miss. For example, if you call out F6 and your opponent does not have any ship located at F6, your opponent"s board would be marked with a white marker. Your opponent records the miss by placing.
+Players take turns guessing by calling out the coordinates. The computer will tell you if you hit or missed. Both players' boards will be marked based on: red for hit, white for miss. For example, if you call out F6 and your opponent does not have any ship located at F6, your opponent's board would be marked with a white marker.
 
-When all of the squares that one your ships occupies have been hit, the ship will be sunk.   You should announce "hit and sunk".  In the physical game, a red peg is placed on the top edge of the vertical board to indicate a sunk ship. 
+When all of the squares that one your ships occupies have been hit, the ship will be sunk.
 
-As soon as all of one player"s ships have been sunk, the game ends.
+As soon as all of one player"s ships have been sunk, the game ends & you have the option to play again or exit to stats.
 """
 
 
@@ -92,6 +107,7 @@ def menu(firstGame: bool) -> int:
     """
 
     playOption: str = "Play Battleship" if firstGame else "Play Again"
+    exitOption: str = "Exit" if firstGame else "Exit & View All Game Stats"
 
     while True:
         cls()
@@ -102,7 +118,7 @@ def menu(firstGame: bool) -> int:
 
         cprint(f"1. {playOption}", "green", attrs=["bold"])
         cprint("2. View The Rules", "yellow", attrs=["bold"])
-        cprint("3. Exit", "red", attrs=["bold"])
+        cprint(f"3. {exitOption}", "red", attrs=["bold"])
 
         try:
             choice: int = int(input("\n> "))
@@ -132,7 +148,7 @@ def main() -> None:
     totalGames: int = 0
 
     while True:
-        menuChoice: int = 1  # menu(True if totalGames == 0 else False)
+        menuChoice: int = 1 #menu(True if totalGames == 0 else False)
 
         if menuChoice == 1:
             totalGames += 1
