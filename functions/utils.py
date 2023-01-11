@@ -3,7 +3,6 @@ from copy import deepcopy as copy
 from termcolor import colored
 
 from classes.Ship import Ship
-from classes.Coordinate import Coordinate
 from classes.Player import Player
 
 

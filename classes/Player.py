@@ -1,5 +1,3 @@
-from classes.Coordinate import Coordinate
-
 class Player:
     """
     This class is used to store player data.
@@ -35,8 +33,7 @@ class Player:
                 singular="Player" if self.player == 1 else "The Computer",
                 singular2="You" if self.player == 1 else "The Computer",
                 determiner="Your" if self.player == 1 else "The Computer's",
-                determiner2="You're"
-                if self.player == 1 else "The Computer is",
+                determiner2="You're" if self.player == 1 else "The Computer is",
             )
             return figure
 

@@ -27,9 +27,13 @@
 import time
 import os
 from termcolor import cprint, colored
+import math
 
 from game import battleship
 from assets import introGraphics
+from functions import utils
+
+from classes.GameDetails import GameDetails
 
 RULES: str = f"""{colored("In-Game Symbols", "blue", attrs=["bold"])}
 
@@ -140,6 +144,22 @@ def menu(firstGame: bool) -> int:
             continue
 
 
+def printGameStats(gameNumber: int, gameStats: GameDetails):
+    cprint(f"Game {gameNumber}:\n", "blue", attrs=['bold', 'underline'])
+    
+    print(colored("Winner:", "blue", attrs=['bold']), colored(gameStats.winner.getHumanized()['singular2'], attrs=['bold']), "\n")
+
+    for player in gameStats.players:
+        cprint(f"{player.getHumanized()['determiner']} Stats:\n", "grey", attrs=['bold'])
+
+        print(colored(f"Guesses:", 'green', attrs=['bold']), ", ".join(utils.coordListToString([[utils.convertNumberToLetter(str(cell[0])), cell[1] + 1] for cell in player.guessedCells])) if player.guessedCells else "N/A")
+        print()
+        print(colored("Total Guesses:", "cyan", attrs=['bold']), player.totalShots)
+        print(colored("Hits:", "red", attrs=['bold']), player.hits)
+        print(colored("Misses:", "yellow", attrs=['bold']), player.misses)
+        print(colored("Hit To Miss Ratio:", "magenta", attrs=['bold']), round(player.hits / player.misses, 2) if player.hits and player.misses else player.hits if not player.misses and player.hits else '(Insufficient Data)')
+        print("\n")
+
 def main() -> None:
     # introSequence()
 
@@ -171,8 +191,11 @@ def main() -> None:
         else:
             raise ValueError()
 
-    for i in allStats:
-        print(i)
+    for gameNumber, gameStat in enumerate(allStats, start = 1):
+        if gameNumber > 1:
+            cprint("\n\n~----------~\n\n", attrs=['bold'])
+        
+        printGameStats(gameNumber, gameStat)
 
 
 if __name__ == "__main__":
