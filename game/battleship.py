@@ -23,12 +23,12 @@ ALPHAS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[:10]
 SHIPS = dict(
     # carrier = Ship(5, "blue", "Carrier"),
     # battleship = Ship(4, "cyan", "Battleship"),
-    cruiser = Ship(8, "yellow", "Cruiser"),
-    submarine = Ship(8, "magenta", "Submarine"),
-    destroyer = Ship(8, "green", "Destroyer"),
+    # cruiser = Ship(3, "yellow", "Cruiser"),
+    # submarine = Ship(3, "magenta", "Submarine"),
+    destroyer = Ship(2, "green", "Destroyer"),
 )
 
-DEBUG = True
+DEBUG = False
 
 SLEEP = 0 if DEBUG else 4
 
@@ -431,9 +431,7 @@ def computerShipPlacement(board: Board) -> None:
 
     cprint(f"The computer is placing it's ships.\n", "blue", attrs=['bold'])
     
-    def getBestDirection(
-        point: Coordinate, shipLen: int
-    ) -> list[list[int, int]]:
+    def getBestDirection(point: Coordinate, shipLen: int) -> list[list[int, int]]:
         # Get the raw coordinates of the point.
         coords = point.rawCoords()
 
@@ -478,6 +476,9 @@ def computerShipPlacement(board: Board) -> None:
                 else:
                     return False
 
+        if not possibleDirections:
+            raise Exception("No suitable computer rotation.")
+        
         # Pick a random direction from the possible directions.
         randomDirection: str = random.choice(possibleDirections)
 
@@ -497,10 +498,13 @@ def computerShipPlacement(board: Board) -> None:
             if not randomCoordinate:
                 continue
 
-            # Use the above algorithm to pick the best orientation for the ship.
-            adjustedCoordinates: list[list[int, int]] = getBestDirection(
-                randomCoordinate, data.length
-            )
+            try:
+                # Use the above algorithm to pick the best orientation for the ship.
+                adjustedCoordinates: list[list[int, int]] = getBestDirection(
+                    randomCoordinate, data.length
+                )
+            except:
+                continue
 
             # If there is no good rotation which also doesn't collide, pick another row and restart this process.
             if not adjustedCoordinates:
@@ -573,7 +577,7 @@ def getHumanMove(player: Player, opponent: Player) -> list[int]:
 
         cprint(f"\n\n{humanizedPlayer.get('determiner')} Board:\n", "blue", attrs=['bold'])
         
-        printBoard(player, opponent, False if ((not player.pvp) and (opponent.getRaw() == 1)) or DEBUG else True, isOutcomeScreen = True if player.pvp else False)
+        printBoard(player, opponent, False if ((not player.pvp) and (opponent.getRaw() == 2)) or DEBUG else True, isOutcomeScreen = True)
 
         choice: str = input("\n\n> ").upper().split()
 
@@ -705,7 +709,7 @@ def getComputerMove(player: Player, opponent: Player, smartShip: SmartShip) -> C
 
 def game() -> GameDetails:
     # Get the prefered game style. (PVP vs PVE)
-    isPVP: bool = False# versusPlayer()
+    isPVP: bool = True# versusPlayer()
 
     # Create a new array for the players.
     players: list[Player] = [Player(1, isPVP), Player(2, isPVP)]
@@ -753,7 +757,7 @@ def game() -> GameDetails:
         humanizedOpponent: dict = humanized1 if player.getRaw() == 2 else humanized2
         
         if isPVP:
-            guess = getHumanMove(player, opponent) if player.getRaw() == 1 else getHumanMove(player, opponent)
+            guess = getHumanMove(player, opponent)
 
             cls()
         else:
