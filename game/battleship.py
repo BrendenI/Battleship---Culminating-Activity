@@ -28,7 +28,7 @@ SHIPS = dict(
     destroyer = Ship(2, "green", "Destroyer"),
 )
 
-DEBUG = False
+DEBUG = True
 
 SLEEP = 0 if DEBUG else 4
 
@@ -709,7 +709,7 @@ def getComputerMove(player: Player, opponent: Player, smartShip: SmartShip) -> C
 
 def game() -> GameDetails:
     # Get the prefered game style. (PVP vs PVE)
-    isPVP: bool = True# versusPlayer()
+    isPVP: bool = False# versusPlayer()
 
     # Create a new array for the players.
     players: list[Player] = [Player(1, isPVP), Player(2, isPVP)]

@@ -150,7 +150,7 @@ def printGameStats(gameNumber: int, gameStats: GameDetails):
     print(colored("Winner:", "blue", attrs=['bold']), colored(gameStats.winner.getHumanized()['singular2'], attrs=['bold']), "\n")
 
     for player in gameStats.players:
-        cprint(f"{player.getHumanized()['determiner']} Stats:\n", "grey", attrs=['bold'])
+        cprint(f"{player.getHumanized()['determiner']} Stats:\n", "grey", attrs=['bold', 'underline'])
 
         print(colored(f"Guesses:", 'green', attrs=['bold']), ", ".join(utils.coordListToString([[utils.convertNumberToLetter(str(cell[0])), cell[1] + 1] for cell in player.guessedCells])) if player.guessedCells else "N/A")
         print()
@@ -159,6 +159,8 @@ def printGameStats(gameNumber: int, gameStats: GameDetails):
         print(colored("Misses:", "yellow", attrs=['bold']), player.misses)
         print(colored("Hit To Miss Ratio:", "magenta", attrs=['bold']), round(player.hits / player.misses, 2) if player.hits and player.misses else player.hits if not player.misses and player.hits else '(Insufficient Data)')
         print("\n")
+        cprint(f"Ships {player.getHumanized()['singular2']} Sunk:\n", "grey", attrs=['bold', 'underline'])
+
 
 def main() -> None:
     # introSequence()
@@ -168,7 +170,7 @@ def main() -> None:
     totalGames: int = 0
 
     while True:
-        menuChoice: int = 1 #menu(True if totalGames == 0 else False)
+        menuChoice: int = menu(True if totalGames == 0 else False)
 
         if menuChoice == 1:
             totalGames += 1
