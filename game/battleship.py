@@ -24,8 +24,8 @@ SHIPS = dict(
     # carrier = Ship(5, "blue", "Carrier"),
     # battleship = Ship(4, "cyan", "Battleship"),
     # cruiser = Ship(3, "yellow", "Cruiser"),
-    # submarine = Ship(3, "magenta", "Submarine"),
-    destroyer = Ship(2, "green", "Destroyer"),
+    submarine = Ship(1, "magenta", "Submarine"),
+    destroyer = Ship(1, "green", "Destroyer"),
 )
 
 DEBUG = True

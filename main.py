@@ -27,7 +27,6 @@
 import time
 import os
 from termcolor import cprint, colored
-import math
 
 from game import battleship
 from assets import introGraphics
@@ -93,9 +92,11 @@ def introSequence() -> None:
     Prints a sequence of ASCII art and characters which make up the splash screen when initializing Battleship.
     """
 
+    # For all of the rows in the intrp graphic, assign them an index.
     for index, image in enumerate(introGraphics.SHIP):
         print(image)
 
+        # If the index is less than the amount of intro graphics, sleep for 0.35 seconds.
         if index < len(introGraphics.SHIP) - 1:
             time.sleep(0.35)
 
@@ -116,14 +117,17 @@ def menu(firstGame: bool) -> int:
     while True:
         cls()
 
+        # Print the freeze frame for loop ability (so you don't have to go thru the animation every invalid input).
         print(introGraphics.TITLE_SHIP_FREEZE_FRAME)
 
+        # Print the options.
         cprint("\nWhat would you like to do? (Choose a Number)\n", attrs=["bold"])
 
         cprint(f"1. {playOption}", "green", attrs=["bold"])
         cprint("2. View The Rules", "yellow", attrs=["bold"])
         cprint(f"3. {exitOption}", "red", attrs=["bold"])
 
+        # Try to get a valid input and return it. If it is invalid, retry the loop with an error.
         try:
             choice: int = int(input("\n> "))
 
@@ -145,22 +149,53 @@ def menu(firstGame: bool) -> int:
 
 
 def printGameStats(gameNumber: int, gameStats: GameDetails):
+    # Print the game number
     cprint(f"Game {gameNumber}:\n", "blue", attrs=['bold', 'underline'])
-    
+
+    # Print the winner.
     print(colored("Winner:", "blue", attrs=['bold']), colored(gameStats.winner.getHumanized()['singular2'], attrs=['bold']), "\n")
 
+    # Loop through the player's stats.
     for player in gameStats.players:
+        # Determine the opponent using the current player.
+        opponent = gameStats.players[0] if player.getRaw() == 2 else gameStats.players[1]
+
+        # Print the header for the stats.
         cprint(f"{player.getHumanized()['determiner']} Stats:\n", "grey", attrs=['bold', 'underline'])
 
+        # Print the guesses of the player.
         print(colored(f"Guesses:", 'green', attrs=['bold']), ", ".join(utils.coordListToString([[utils.convertNumberToLetter(str(cell[0])), cell[1] + 1] for cell in player.guessedCells])) if player.guessedCells else "N/A")
         print()
+        # Print the total guesses.
         print(colored("Total Guesses:", "cyan", attrs=['bold']), player.totalShots)
+        # Print the total hits.
         print(colored("Hits:", "red", attrs=['bold']), player.hits)
+        # Print the total misses.
         print(colored("Misses:", "yellow", attrs=['bold']), player.misses)
+        # Print the hit to miss ratio and then make sure that it is possible using a big if/else comprehension.
         print(colored("Hit To Miss Ratio:", "magenta", attrs=['bold']), round(player.hits / player.misses, 2) if player.hits and player.misses else player.hits if not player.misses and player.hits else '(Insufficient Data)')
-        print("\n")
+        print()
+        # Print the ships that the player sunk.
         cprint(f"Ships {player.getHumanized()['singular2']} Sunk:\n", "grey", attrs=['bold', 'underline'])
 
+        # If there was no ships sunk, print so.
+        if not opponent.board.sunkShips:
+            cprint("(None)", "red", attrs=['bold'])
+        else:
+            # Loop through all of the ships that were sunk.
+            for ship in opponent.board.sunkShips:
+                # Print the player that sunk the ship, the player that got their ships sunk, the name of the ship that was sunk, and the amount of moves that it took for the ship to be sunk.
+                cprint(f"{player.getHumanized()['singular2']} Sunk {opponent.getHumanized()['determiner']} {ship.name} After {ship.movesToSink} Move{'s' if ship.movesToSink != 1 else ''}.", 'green', attrs=['bold'])
+
+        # Print the player's board at it's end of game state.
+        cprint(f"\n{player.getHumanized()['determiner']} Board:\n", "grey", attrs=['bold', 'underline'])
+
+        battleship.printBoard(player, opponent, False)
+
+        # Print the separator if it is the first player.
+        if player.getRaw() == 1:
+            print("\n\n~---------------~\n\n")
+        
 
 def main() -> None:
     # introSequence()
@@ -195,7 +230,7 @@ def main() -> None:
 
     for gameNumber, gameStat in enumerate(allStats, start = 1):
         if gameNumber > 1:
-            cprint("\n\n~----------~\n\n", attrs=['bold'])
+            cprint("\n\n~----------------------------------------~\n\n", "red", attrs=['bold'])
         
         printGameStats(gameNumber, gameStat)
 

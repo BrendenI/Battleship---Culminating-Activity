@@ -9,6 +9,9 @@ class SmartShip:
         self.current = None
 
     def rotation(self) -> str:
+        """
+        This function is used to determine the ship rotation using guessed coordinates. If the y-values are equal, the ship is horizontal, and vice-versa.
+        """
         if not self.origin or not self.current:
             return None
 
