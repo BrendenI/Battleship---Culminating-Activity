@@ -198,27 +198,33 @@ def printGameStats(gameNumber: int, gameStats: GameDetails):
         
 
 def main() -> None:
+    # Print the intro graphics.
     # introSequence()
 
+    # Init lists for all of the stats and the total number of games played.
     allStats: list = []
 
     totalGames: int = 0
 
     while True:
+        # Get the menu choice from the user.
         menuChoice: int = menu(True if totalGames == 0 else False)
 
+        # If the user chooses 1, launch the game.
         if menuChoice == 1:
             totalGames += 1
 
             stats = battleship.main()
 
             allStats.append(stats)
+        # If the user chooses 2, launch the rules.
         elif menuChoice == 2:
             print(RULES)
 
             input(colored("\nPress [ENTER] to continue.", "green", attrs=["bold"]))
 
             continue
+        # If the user chooses 3, exit to stats if applicable.
         elif menuChoice == 3:
             if not allStats:
                 exit("Goodbye! 👋")
@@ -228,6 +234,7 @@ def main() -> None:
         else:
             raise ValueError()
 
+    # Loop through all of the stats and display them.
     for gameNumber, gameStat in enumerate(allStats, start = 1):
         if gameNumber > 1:
             cprint("\n\n~----------------------------------------~\n\n", "red", attrs=['bold'])

@@ -47,35 +47,57 @@ def getFormattedRows(player: Player, opponent: Player, facingOpponent: bool, tem
 
     iterable: list[list[Coordinate]] = None
 
+    # If the board should be hidden;
     if facingOpponent:
+        # If the board should be the temporary version;
         if temp:
+            # Set the iterable to the opponent's temporary board.
             iterable = opponent.board.tempBoard
+        # If the board should be the game version;
         else:
+            # If the board should not be inverse;
             if isOutcomeScreen:
+                # Set the iterable to the player's game board.
                 iterable = player.board.rows
+            # If the board should be inverse;
             else:
+                # Set the iterable to the opponent's game board.
                 iterable = opponent.board.rows
+    # If the board should not be hidden;
     else:
+        # If the board should be the temporary version;
         if temp:
+            # Set the iterable to the player's temporary board.
             iterable = player.board.tempBoard
+        # If the board should be the game version;
         else:
+            # Set the iterable to the player's game board.
             iterable = player.board.rows
 
+    # Iterate through the iterable and assign an index.
     for num, row in enumerate(iterable, start=1):
         formattedRow: list[str] = []
-        
+
         for coordinate in row:
+            # Get the raw coords of the specific point.
             rawcoords = coordinate.rawCoords()
-            
+
+            # If the ship was hit at the coord;
             if iterable[rawcoords[1]][rawcoords[0]].shipHit:
+                # Append a red "X".
                 formattedRow.append(colored("⛝", 'red'))
+            # If the opponent guessed the coordinate, or there is a ship;
             elif opponent.isGuessed(coordinate.rawCoords()) or coordinate.ship:
+                # Append a white square if the opponent guessed the coordinate, else append a coloured square, coloured to the specific ship colour. If the board is to be hidden, append a normal square.
                 formattedRow.append("■") if opponent.isGuessed(coordinate.rawCoords()) else formattedRow.append(colored("■", coordinate.ship.colour)) if not facingOpponent else formattedRow.append("□")
             else:
+                # Append a normal square if there is no special features of the coordinate.
                 formattedRow.append("□")
-            
+
+        # Insert the numbers which are displayed along the Y-Axis. Also append proper spacing.
         formattedRow.insert(0, f"{num}  " if num < 10 else f"{num} ")
 
+        # Append the finalized row to the formatted row array.
         formattedRows.append(formattedRow)
 
     return formattedRows
@@ -550,8 +572,10 @@ def printStartingPlayer(player: Player) -> None:
 
 
 def displayStats(player: Player, opponent: Player) -> None:
+    # Get the humanized versions of the player names.
     addresses = player.getHumanized()
-    
+
+    # Display all of the current game stats.
     print(colored(f"{addresses.get('determiner')} Guesses:", "green", attrs=['bold']), ", ".join(utils.coordListToString([[utils.convertNumberToLetter(str(cell[0])), cell[1] + 1] for cell in player.guessedCells])) if player.guessedCells else "N/A", "\n")
     print(colored(f"{addresses.get('determiner')} Total Shots:", "cyan", attrs=['bold']), player.totalShots)
     print(colored(f"{addresses.get('determiner')} Hits:", "red", attrs=['bold']), player.hits)
@@ -564,23 +588,29 @@ def getHumanMove(player: Player, opponent: Player) -> list[int]:
     while True:
         cls()
 
+        # Get the humanized versions of the player names.
         humanizedOpponent = opponent.getHumanized()
         humanizedPlayer = player.getHumanized()
 
+        # Get the current player's move.
         cprint(f"{humanizedPlayer.get('singular')}, pick a cell to attack! The format should be: 'X Y'; for example, 'A 5'.\n\n", "blue", attrs=['bold'])
 
+        # Display the stats of the current player.
         displayStats(player, opponent)
 
+        # Display the opponent's board.
         cprint(f"{humanizedOpponent.get('determiner')} Board:\n", "blue", attrs=['bold'])
-        
+
         printBoard(opponent, player, False if ((not player.pvp) and (opponent.getRaw() == 1)) or DEBUG else True, isOutcomeScreen = True)
 
+        # Display the player's board.
         cprint(f"\n\n{humanizedPlayer.get('determiner')} Board:\n", "blue", attrs=['bold'])
         
         printBoard(player, opponent, False if ((not player.pvp) and (opponent.getRaw() == 2)) or DEBUG else True, isOutcomeScreen = True)
 
         choice: str = input("\n\n> ").upper().split()
 
+        # If the choice was incorrect, throw an error.
         if len(choice) != 2 or not all([choice[0] in ALPHAS, choice[1].isdigit()]) or int(choice[1]) < 1 or int(choice[1]) > 10:
             input(
                 colored(
@@ -593,8 +623,10 @@ def getHumanMove(player: Player, opponent: Player) -> list[int]:
 
             continue
 
+        # Convert the choice to an index array.
         choice = [utils.convertLetterToNumber(choice[0]), int(choice[1]) - 1]
 
+        # If the player guessed the same coordinate, display an error.
         if player.isGuessed(choice):
             input(
                 colored(
@@ -607,6 +639,7 @@ def getHumanMove(player: Player, opponent: Player) -> list[int]:
 
             continue
 
+        # Add the choice to the guessed cells and return the choice.
         player.addGuessedCell(choice)
         
         return choice
@@ -616,22 +649,32 @@ def getComputerMove(player: Player, opponent: Player, smartShip: SmartShip) -> C
     randomCoordinate: Coordinate = None
     
     while True:
+        # If there is an original hit point;
         if smartShip.origin:
+            # If there is a current hit point;
             if smartShip.current:
+                # Determine the rotation of the ship using the 2 points.
                 rotation: str = smartShip.rotation()
-                
+
+                # Get the current and origin's raw coordinates. (integer indicies)
                 currentCoords: list[int] = smartShip.current.rawCoords()
                 originCoords: list[int] = smartShip.origin.rawCoords()
-    
+
+                # If the ship is determined to be vertical;
                 if rotation == "vertical":
+                    # If the Y value of the current coordinate is less than the origin;
                     if currentCoords[1] < originCoords[1]:
+                        # Check if the guess is possible;
                         if currentCoords[1] - 1 < 0:
+                            # Reset the point if not.
                             smartShip.current = None
                             
                             continue
 
+                        # Get the raw coords of the new coordinate. Subtract 1 from the Y coordinate. (Guess up)
                         coordClass: Coordinate = player.board.getCellData(currentCoords[0], currentCoords[1] - 1)
-                        
+
+                        # Append the new coordinates to the guessed cells.
                         player.addGuessedCell(coordClass.rawCoords())
                         
                         return coordClass
