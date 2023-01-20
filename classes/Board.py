@@ -6,6 +6,7 @@ from classes.Coordinate import Coordinate
 
 from functions import utils
 
+
 class Board:
     def __init__(self, rows: list[list[Coordinate]]):
         self.rows = rows
@@ -24,12 +25,15 @@ class Board:
         This function returns the data for a specific cell. Use indices: -1 < x < 10.
         """
         if x > 9 or x < 0 or y > 9 or y < 0:
-            raise ValueError("board.getCellData was provided an input that satisfies: x > 9 or x < 0 or y > 9 or y < 0")
+            raise ValueError(
+                "board.getCellData was provided an input that satisfies: x > 9 or x < 0 or y > 9 or y < 0"
+            )
 
         return self.rows[y][x]
-            
 
-    def tempAddShip(self, startCoordinates: list[int], endCoordinates: list[int], shipData) -> list[list[Coordinate]]:
+    def tempAddShip(
+        self, startCoordinates: list[int], endCoordinates: list[int], shipData
+    ) -> list[list[Coordinate]]:
         """
         This function temporarily adds a ship to the board. This is used during ship placement to avoid interfering with the actual board.
         """
@@ -72,7 +76,9 @@ class Board:
         # Set the temp board to the edited temp rows.
         self.tempBoard = tempRows
 
-    def tempRemShip(self, startCoordinates: list[int], endCoordinates: list[int], shipData) -> list[list[Coordinate]]:
+    def tempRemShip(
+        self, startCoordinates: list[int], endCoordinates: list[int], shipData
+    ) -> list[list[Coordinate]]:
         """
         This function removes temporarily added ships from the board. This is used during ship placement to avoid interfering with the actual board.
         """
@@ -108,7 +114,9 @@ class Board:
 
         self.tempBoard = tempRows
 
-    def setShip(self, startCoordinates: list[int], endCoordinates: list[int], shipData: Ship) -> None:
+    def setShip(
+        self, startCoordinates: list[int], endCoordinates: list[int], shipData: Ship
+    ) -> None:
         """
         This function sets a ship from start to end coordinates on the actual board. It also adds a start to end coordinate to the shipLocations dictionary.
         """
@@ -141,8 +149,7 @@ class Board:
             )
 
         self.shipLocations[shipData.name] = dict(
-            startCoordinates = startCoordinates,
-            endCoordinates = endCoordinates
+            startCoordinates=startCoordinates, endCoordinates=endCoordinates
         )
 
     def collides(self, startCoordinates: list[int], endCoordinates: list[int]) -> bool:
@@ -150,7 +157,9 @@ class Board:
         This function checks if a coordinate range will collide with a ship. It returns a list of collisions if found.
         """
         # Get the range coords of the ship that is to be placed.
-        coordsOfCurrent: list[list[int, int]] = utils.getCoordsFromStartToEnd(startCoordinates, endCoordinates)
+        coordsOfCurrent: list[list[int, int]] = utils.getCoordsFromStartToEnd(
+            startCoordinates, endCoordinates
+        )
 
         # Init an an array for potential collisions.
         collisions: list[tuple[str, int]] = []
@@ -171,12 +180,18 @@ class Board:
         """
         return random.choice(self.rows)
 
-    def getRandomCoordinate(self, row: list[Coordinate], allowShips = False) -> Coordinate:
+    def getRandomCoordinate(
+        self, row: list[Coordinate], allowShips=False
+    ) -> Coordinate:
         """
         This function gets a random coordinate from a row. The function, by default, chooses a coordinate which doesn't have a ship, however this can be overwrote upon call.
         """
         # Filter through all of the coordinates in the row. If it is specified that there is only to be shipless coordinates, filter through all of the coords and only accept ones with no ship.
-        randomCoordinates = row if allowShips else list(filter(lambda coordinate : coordinate.ship == False, row))
+        randomCoordinates = (
+            row
+            if allowShips
+            else list(filter(lambda coordinate: coordinate.ship == False, row))
+        )
 
         if not randomCoordinates:
             return False

@@ -2,6 +2,7 @@ class Ship:
     """
     This class is used to store ship data.
     """
+
     def __init__(self, length: int, colour: str, name: str):
         self.length = length
         self.colour = colour

@@ -2,6 +2,7 @@ class Player:
     """
     This class is used to store player data.
     """
+
     def __init__(self, player: int, pvp: bool):
         self.player = player
         self.pvp = pvp
@@ -41,12 +42,12 @@ class Player:
         """
         This function adds the provided cell to the guesses array.
         """
-        
+
         self.guessedCells.append(coordinates)
-    
+
     def isGuessed(self, coordinates: list[int]) -> bool:
         """
         This function determines if the user has guessed the coordinate already.
         """
-        
+
         return list(coordinates) in self.guessedCells

@@ -3,6 +3,7 @@ from classes.SunkShip import SunkShip
 
 from functions import utils
 
+
 class SmartShip:
     def __init__(self):
         self.origin = None
@@ -20,4 +21,6 @@ class SmartShip:
         elif self.current.rawCoords()[1] == self.origin.rawCoords()[1]:
             return "horizontal"
         else:
-            raise Exception("Error determining smart ship rotation, classes.SmartShip.SmartShip.")
+            raise Exception(
+                "Error determining smart ship rotation, classes.SmartShip.SmartShip."
+            )
