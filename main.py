@@ -1,6 +1,6 @@
 # Brenden Iannetta
 # Mr. Brescacin - ICS3U
-# December 16, 2022 -> January XX, 2023
+# December 16, 2022 -> January 24, 2023
 # Culminating Activity
 {
     # 0 - 85%:
@@ -121,7 +121,8 @@ def menu(firstGame: bool) -> int:
         print(introGraphics.TITLE_SHIP_FREEZE_FRAME)
 
         # Print the options.
-        cprint("\nWhat would you like to do? (Choose a Number)\n", attrs=["bold"])
+        cprint("\nWhat would you like to do? (Choose a Number)\n",
+               attrs=["bold"])
 
         cprint(f"1. {playOption}", "green", attrs=["bold"])
         cprint("2. View The Rules", "yellow", attrs=["bold"])
@@ -142,8 +143,7 @@ def menu(firstGame: bool) -> int:
                     "\nError! Please enter one of the numbers!\n\nPress [ENTER] to Continue",
                     "red",
                     attrs=["bold"],
-                )
-            )
+                ))
             cls()
             continue
 
@@ -162,9 +162,8 @@ def printGameStats(gameNumber: int, gameStats: GameDetails):
     # Loop through the player's stats.
     for player in gameStats.players:
         # Determine the opponent using the current player.
-        opponent = (
-            gameStats.players[0] if player.getRaw() == 2 else gameStats.players[1]
-        )
+        opponent = (gameStats.players[0]
+                    if player.getRaw() == 2 else gameStats.players[1])
 
         # Print the header for the stats.
         cprint(
@@ -178,18 +177,14 @@ def printGameStats(gameNumber: int, gameStats: GameDetails):
             colored(f"Guesses:", "green", attrs=["bold"]),
             ", ".join(
                 utils.coordListToString(
-                    [
-                        [utils.convertNumberToLetter(str(cell[0])), cell[1] + 1]
-                        for cell in player.guessedCells
-                    ]
-                )
-            )
-            if player.guessedCells
-            else "N/A",
+                    [[utils.convertNumberToLetter(str(cell[0])), cell[1] + 1]
+                     for cell in player.guessedCells]))
+            if player.guessedCells else "N/A",
         )
         print()
         # Print the total guesses.
-        print(colored("Total Guesses:", "cyan", attrs=["bold"]), player.totalShots)
+        print(colored("Total Guesses:", "cyan", attrs=["bold"]),
+              player.totalShots)
         # Print the total hits.
         print(colored("Hits:", "red", attrs=["bold"]), player.hits)
         # Print the total misses.
@@ -198,10 +193,8 @@ def printGameStats(gameNumber: int, gameStats: GameDetails):
         print(
             colored("Hit To Miss Ratio:", "magenta", attrs=["bold"]),
             round(player.hits / player.misses, 2)
-            if player.hits and player.misses
-            else player.hits
-            if not player.misses and player.hits
-            else "(Insufficient Data)",
+            if player.hits and player.misses else player.hits
+            if not player.misses and player.hits else "(Insufficient Data)",
         )
         print()
         # Print the ships that the player sunk.
@@ -262,7 +255,10 @@ def main() -> None:
         elif menuChoice == 2:
             print(RULES)
 
-            input(colored("\nPress [ENTER] to continue.", "green", attrs=["bold"]))
+            input(
+                colored("\nPress [ENTER] to continue.",
+                        "green",
+                        attrs=["bold"]))
 
             continue
         # If the user chooses 3, exit to stats if applicable.
